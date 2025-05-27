@@ -1,9 +1,15 @@
 # single-agent/main.py
 
+from dotenv import load_dotenv
+from pathlib import Path
+import os
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
+print("DEBUG: OPENAI_API_KEY =", os.getenv("OPENAI_API_KEY"))  # debug
+
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from pathlib import Path
-import os
+
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
@@ -15,7 +21,7 @@ output_path.parent.mkdir(parents=True, exist_ok=True)
 def generate_pod_yaml():
     chat = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.2, model="gpt-4")
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a Kubernetes expert."),
+        ("system", "You are a Kubernetes expert. Your task is to create pod configuration files in YAML format based on user requests. Ensure the YAML is minimal and efficient without comments. Do not include any additional explanations or text."),
         ("human", "Write a minimal Kubernetes pod YAML that runs an nginx container with very low resource usage.")
     ])
     response = chat(prompt.format_messages())
